@@ -13,7 +13,12 @@ const Newtab = () => {
   // Step 2: Update the addLink function
   const addLink = () => {
     if (linkTitle && linkUrl) {
-      const newLinks = [...links, { title: linkTitle, url: linkUrl }];
+      let modifiedUrl = linkUrl;
+      if (!/^https?:\/\//i.test(modifiedUrl)) {
+        modifiedUrl = 'https://' + modifiedUrl;
+      }
+
+      const newLinks = [...links, { title: linkTitle, url: modifiedUrl }];
       setLinks(newLinks);
       setLinkTitle('');
       setLinkUrl('');
