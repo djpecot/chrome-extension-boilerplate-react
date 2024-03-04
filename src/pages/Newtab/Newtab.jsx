@@ -12,6 +12,10 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import { v4 as uuidv4 } from 'uuid'; // You need to install uuid to generate unique ids
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 
 const Newtab = () => {
@@ -21,6 +25,36 @@ const Newtab = () => {
   const [linkUrl, setLinkUrl] = useState('');
   const [links, setLinks] = useState([]);
   const [counter, setCounter] = useState(23);
+  const [cards, setCards] = useState([]);
+
+  // Load the cards from chrome.storage when the component mounts
+  useEffect(() => {
+    chrome.storage.sync.get(['cards'], (result) => {
+      if (result.cards) {
+        setCards(result.cards);
+      }
+    });
+  }, []);
+
+  // Function to add a new card and save to chrome.storage
+  const addCard = () => {
+    const newCard = {
+      id: uuidv4(),
+      title: 'New Card',
+      description: 'Description here',
+      links: []
+    };
+    const newCards = [...cards, newCard];
+    setCards(newCards);
+    chrome.storage.sync.set({ cards: newCards });
+  };
+
+  // Function to delete a card and update chrome.storage
+  const deleteCard = (cardId) => {
+    const updatedCards = cards.filter(card => card.id !== cardId);
+    setCards(updatedCards);
+    chrome.storage.sync.set({ cards: updatedCards });
+  };
 
   // Function to increase the counter and save to chrome.storage
   const increaseCounter = () => {
@@ -83,73 +117,37 @@ const Newtab = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <Card sx={{ maxWidth: 345 }}>
-          <CardMedia
-            component="img"
-            alt="green iguana"
-            height="140"
-            image="/static/images/cards/contemplative-reptile.jpg"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              Lizard
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Lizards are a widespread group of squamate reptiles, with over 6,000
-              species, ranging across all continents except Antarctica
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small">Share</Button>
-            <Button size="small">Learn More</Button>
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-              <Button size="small" variant="outlined" startIcon={<RemoveIcon />} onClick={decreaseCounter}>
-                Decrease
-              </Button>
-              <Typography sx={{ mx: 2 }}>{counter}</Typography>
-              <Button size="small" variant="outlined" startIcon={<AddIcon />} onClick={increaseCounter}>
-                Increase
-              </Button>
-            </Box>
-          </CardActions>
-        </Card>
-        <Button variant="contained">Hello world</Button>;
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/pages/Newtab/Newtab.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React!
-        </a>
-        {/* Step 3: Render the links */}
-        <div>
-          {links.map((link, index) => (
-            <a key={index} href={link.url} target="_blank" rel="noopener noreferrer">
-              {link.title}
-            </a>
+        <Box sx={{ display: 'flex', overflowX: 'auto', p: 1 }}>
+          {cards.map((card) => (
+            <Card key={card.id} sx={{ maxWidth: 345, m: 1, display: 'flex', flexDirection: 'column' }}>
+              <CardMedia
+                component="img"
+                alt="green iguana"
+                height="140"
+                image="/static/images/cards/contemplative-reptile.jpg"
+              />
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  {card.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {card.description}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button size="small" onClick={() => editCard(card.id)}>
+                  <EditIcon />
+                </Button>
+                <Button size="small" onClick={() => deleteCard(card.id)}>
+                  <DeleteIcon />
+                </Button>
+              </CardActions>
+            </Card>
           ))}
-        </div>
-        <input
-          type="text"
-          placeholder="Title"
-          value={linkTitle}
-          onChange={(e) => setLinkTitle(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="URL"
-          value={linkUrl}
-          onChange={(e) => setLinkUrl(e.target.value)}
-        />
-        <button onClick={addLink}>
-          Add New Link
-        </button>
-        <h6>The color of this paragraph is defined using SASS.</h6>
+          <Button onClick={addCard} sx={{ minWidth: 345, height: 'fit-content', m: 1 }}>
+            <AddCircleOutlineIcon sx={{ fontSize: 'large' }} />
+          </Button>
+        </Box>
       </header>
     </div>
   );
