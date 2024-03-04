@@ -22,15 +22,36 @@ const Newtab = () => {
   const [links, setLinks] = useState([]);
   const [counter, setCounter] = useState(23);
 
-  // Function to increase the counter
+  // Function to increase the counter and save to chrome.storage
   const increaseCounter = () => {
-    setCounter(prevCounter => prevCounter + 1);
+    setCounter(prevCounter => {
+      const newCounter = prevCounter + 1;
+      chrome.storage.sync.set({ counter: newCounter });
+      return newCounter;
+    });
   };
 
-  // Function to decrease the counter
+  // Function to decrease the counter and save to chrome.storage
   const decreaseCounter = () => {
-    setCounter(prevCounter => prevCounter - 1);
+    setCounter(prevCounter => {
+      const newCounter = prevCounter - 1;
+      chrome.storage.sync.set({ counter: newCounter });
+      return newCounter;
+    });
   };
+
+  // Load the counter value from chrome.storage when the component mounts
+  useEffect(() => {
+    chrome.storage.sync.get(['counter'], (result) => {
+      if (result.counter !== undefined) {
+        setCounter(result.counter);
+      } else {
+        // If no counter value is stored, initialize it to 23
+        setCounter(23);
+        chrome.storage.sync.set({ counter: 23 });
+      }
+    });
+  }, []);
 
   // Step 2: Update the addLink function
   const addLink = () => {
