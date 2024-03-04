@@ -16,6 +16,10 @@ import { v4 as uuidv4 } from 'uuid'; // You need to install uuid to generate uni
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import Modal from '@mui/material/Modal';
+import Backdrop from '@mui/material/Backdrop';
+import Fade from '@mui/material/Fade';
+import TextField from '@mui/material/TextField';
 
 
 const Newtab = () => {
@@ -26,6 +30,8 @@ const Newtab = () => {
   const [links, setLinks] = useState([]);
   const [counter, setCounter] = useState(23);
   const [cards, setCards] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCard, setEditingCard] = useState(null);
 
   // Load the cards from chrome.storage when the component mounts
   useEffect(() => {
@@ -54,6 +60,31 @@ const Newtab = () => {
     const updatedCards = cards.filter(card => card.id !== cardId);
     setCards(updatedCards);
     chrome.storage.sync.set({ cards: updatedCards });
+  };
+
+  // Function to open the modal with the card's data
+  const editCard = (cardId) => {
+    const cardToEdit = cards.find(card => card.id === cardId);
+    setEditingCard(cardToEdit);
+    setIsModalOpen(true);
+  };
+
+  // Function to handle the changes in the modal's input fields
+  const handleEditChange = (e, field) => {
+    setEditingCard({ ...editingCard, [field]: e.target.value });
+  };
+
+  // Function to save the edited card
+  const saveCard = () => {
+    const updatedCards = cards.map(card => {
+      if (card.id === editingCard.id) {
+        return editingCard;
+      }
+      return card;
+    });
+    setCards(updatedCards);
+    chrome.storage.sync.set({ cards: updatedCards });
+    setIsModalOpen(false);
   };
 
   // Function to increase the counter and save to chrome.storage
@@ -149,6 +180,54 @@ const Newtab = () => {
           </Button>
         </Box>
       </header>
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={isModalOpen}>
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            outline: 'none' // Disable focus outline for accessibility, consider a visible alternative
+          }}>
+            <Typography variant="h6" component="h2">
+              Edit Card
+            </Typography>
+            <TextField
+              label="Title"
+              value={editingCard?.title || ''}
+              onChange={(e) => handleEditChange(e, 'title')}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Description"
+              value={editingCard?.description || ''}
+              onChange={(e) => handleEditChange(e, 'description')}
+              fullWidth
+              margin="normal"
+              multiline
+            />
+            {/* Add more fields if needed */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Button variant="contained" color="primary" onClick={saveCard}>
+                Save
+              </Button>
+            </Box>
+          </Box>
+        </Fade>
+      </Modal>
     </div>
   );
 };
