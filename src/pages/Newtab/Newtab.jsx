@@ -29,7 +29,6 @@ const Newtab = () => {
   const [linkTitle, setLinkTitle] = useState('');
   const [linkUrl, setLinkUrl] = useState('');
   const [links, setLinks] = useState([]);
-  const [counter, setCounter] = useState(23);
   const [cards, setCards] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
@@ -37,6 +36,19 @@ const Newtab = () => {
     { id: uuidv4(), title: 'Counter 1', number: 23 },
     // ... add more counters as needed
   ]);
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState('');
+
+  useEffect(() => {
+    // Fetch a random image from Unsplash and set it as the background
+    fetch('https://source.unsplash.com/random?nature')
+      .then((response) => {
+        setBackgroundImageUrl(response.url);
+        console.log(response.url); // For debugging
+      })
+      .catch((error) => {
+        console.error('Error fetching random image from Unsplash:', error);
+      });
+  }, []);
 
   // Function to add a new counter
   const addCounter = () => {
@@ -59,12 +71,19 @@ const Newtab = () => {
 
   // Function to update a counter's number
   const updateCounterNumber = (counterId, delta) => {
-    setCounters(prevCounters => prevCounters.map(counter => {
-      if (counter.id === counterId) {
-        return { ...counter, number: counter.number + delta };
-      }
-      return counter;
-    }));
+    setCounters(prevCounters => {
+      const updatedCounters = prevCounters.map(counter => {
+        if (counter.id === counterId) {
+          return { ...counter, number: counter.number + delta };
+        }
+        return counter;
+      });
+      // Save the updated counters array to chrome.storage after updating the state
+      chrome.storage.sync.set({ counters: updatedCounters });
+      return updatedCounters;
+    }, () => {
+      // Use this space to do anything else after the state has been updated
+    });
   };
 
   // Add UI elements for displaying counters
@@ -90,6 +109,19 @@ const Newtab = () => {
     chrome.storage.sync.get(['cards'], (result) => {
       if (result.cards) {
         setCards(result.cards);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    chrome.storage.sync.get(['counters'], (result) => {
+      if (result.counters) {
+        setCounters(result.counters);
+      } else {
+        // Initialize with a default counter if none are found
+        const defaultCounter = { id: uuidv4(), title: 'Counter 1', number: 23 };
+        setCounters([defaultCounter]);
+        chrome.storage.sync.set({ counters: [defaultCounter] });
       }
     });
   }, []);
@@ -146,22 +178,30 @@ const Newtab = () => {
   const saveCard = () => {
     if ('number' in editingCard) {
       // It's a counter card, update the counters state
-      setCounters(prevCounters => prevCounters.map(counter => {
-        if (counter.id === editingCard.id) {
-          return { ...counter, number: editingCard.number };
-        }
-        return counter;
-      }));
+      setCounters(prevCounters => {
+        const updatedCounters = prevCounters.map(counter => {
+          if (counter.id === editingCard.id) {
+            return { ...counter, number: editingCard.number };
+          }
+          return counter;
+        });
+        // Save the updated counters array to chrome.storage
+        chrome.storage.sync.set({ counters: updatedCounters });
+        return updatedCounters;
+      });
     } else {
       // It's a link card, update the cards state
-      const updatedCards = cards.map(card => {
-        if (card.id === editingCard.id) {
-          return { ...editingCard };
-        }
-        return card;
+      setCards(prevCards => {
+        const updatedCards = prevCards.map(card => {
+          if (card.id === editingCard.id) {
+            return { ...card, ...editingCard };
+          }
+          return card;
+        });
+        // Save the updated cards array to chrome.storage
+        chrome.storage.sync.set({ cards: updatedCards });
+        return updatedCards;
       });
-      setCards(updatedCards);
-      chrome.storage.sync.set({ cards: updatedCards });
     }
     setIsModalOpen(false);
   };
@@ -225,7 +265,7 @@ const Newtab = () => {
   }, []);
 
   return (
-    <div className="App">
+    <div className="App" style={{ backgroundImage: `url(${backgroundImageUrl})`, backgroundSize: 'cover' }}>
       <header className="App-header">
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
           {countersUI}
