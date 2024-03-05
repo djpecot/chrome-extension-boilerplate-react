@@ -38,6 +38,18 @@ const Newtab = () => {
     // ... add more counters as needed
   ]);
 
+  // Function to add a new counter
+  const addCounter = () => {
+    const newCounter = {
+      id: uuidv4(),
+      title: `Counter ${counters.length + 1}`,
+      number: 0
+    };
+    setCounters([...counters, newCounter]);
+    // Save the new counters array to chrome.storage if needed
+    chrome.storage.sync.set({ counters: [...counters, newCounter] });
+  };
+
   // Function to open the modal for a specific counter
   const openCounterModal = (counterId) => {
     const counterToEdit = counters.find(counter => counter.id === counterId);
@@ -57,7 +69,7 @@ const Newtab = () => {
 
   // Add UI elements for displaying counters
   const countersUI = (
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
       {counters.map((counter) => (
         <CounterCard
           key={counter.id}
@@ -67,6 +79,9 @@ const Newtab = () => {
           onDecrease={() => updateCounterNumber(counter.id, -1)}
         />
       ))}
+      <Button onClick={addCounter} sx={{ minWidth: 'fit-content', height: 'fit-content', m: 1 }}>
+        <AddCircleOutlineIcon sx={{ fontSize: 'large' }} />
+      </Button>
     </Box>
   );
 
@@ -212,7 +227,9 @@ const Newtab = () => {
   return (
     <div className="App">
       <header className="App-header">
-        {countersUI}
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+          {countersUI}
+        </Box>
         <Box sx={{ display: 'flex', overflowX: 'auto', p: 1 }}>
           {cards.map((card) => (
             <Card
