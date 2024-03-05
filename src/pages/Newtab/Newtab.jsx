@@ -37,6 +37,38 @@ const Newtab = () => {
     // ... add more counters as needed
   ]);
   const [backgroundImageUrl, setBackgroundImageUrl] = useState('');
+  // At the top of your component, add a new state for the quote
+  const [inspirationalQuote, setInspirationalQuote] = useState('Persistence powers passion.');
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+    return () => clearInterval(intervalId); // Clear the interval on unmount
+  }, []);
+
+  // Define an array of quotes or fetch from an API
+  const quotes = [
+    'Persistence powers passion.',
+    'The secret of getting ahead is getting started.',
+    'All our dreams can come true, if we have the courage to pursue them.',
+    // ... more quotes
+  ];
+
+  // Function to update the quote randomly
+  const updateQuote = () => {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    setInspirationalQuote(quotes[randomIndex]);
+  };
+
+  // Call this function when the component mounts
+  useEffect(() => {
+    updateQuote();
+    // Update the quote every 24 hours
+    const intervalId = setInterval(updateQuote, 86400000); // 86400000 ms in a day
+    return () => clearInterval(intervalId); // Clear the interval on unmount
+  }, []);
 
   useEffect(() => {
     // Fetch a random image from Unsplash and set it as the background
@@ -267,6 +299,22 @@ const Newtab = () => {
       <header className="App-header">
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
           {countersUI}
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', p: 2 }}>
+          <Typography variant="h2" component="h2" sx={{
+            fontWeight: 'bold',
+            fontSize: '8rem', // Doubled from '4rem' to '8rem'
+            textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+          }}>
+            {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </Typography>
+          <Typography variant="subtitle1" sx={{
+            fontWeight: 'bold',
+            fontSize: '3rem', // Doubled from '1.5rem' to '3rem'
+            textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
+          }}>
+            {inspirationalQuote}
+          </Typography>
         </Box>
         <Box sx={{ display: 'flex', overflowX: 'auto', p: 1 }}>
           {cards.map((card) => (
