@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import logo from '../../assets/img/logo.svg';
 import './Newtab.css';
 import './Newtab.scss';
@@ -21,6 +21,7 @@ import Modal from '@mui/material/Modal';
 import Backdrop from '@mui/material/Backdrop';
 import Fade from '@mui/material/Fade';
 import TextField from '@mui/material/TextField';
+import Drawer from '@mui/material/Drawer';
 
 
 const Newtab = () => {
@@ -40,6 +41,29 @@ const Newtab = () => {
   // At the top of your component, add a new state for the quote
   const [inspirationalQuote, setInspirationalQuote] = useState('Persistence powers passion.');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+
+
+  // Add a ref to the drawer
+  const drawerRef = useRef(null);
+
+  // Function to open the drawer on hover
+  const handleMouseEnter = () => {
+    setIsDrawerOpen(true);
+  };
+
+  // Function to close the drawer when the mouse leaves the drawer area
+  const handleMouseLeave = () => {
+    setIsDrawerOpen(false);
+  };
+
+  const toggleDrawer = (open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setIsDrawerOpen(open);
+  };
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -102,12 +126,7 @@ const Newtab = () => {
     setIsModalOpen(false); // Close the modal after deletion
   };
 
-  // Function to open the modal for a specific counter
-  const openCounterModal = (counterId) => {
-    const counterToEdit = counters.find(counter => counter.id === counterId);
-    setEditingCard(counterToEdit); // Reuse the editingCard state for editing counters
-    setIsModalOpen(true);
-  };
+
 
   // Function to update a counter's number
   const updateCounterNumber = (counterId, delta) => {
@@ -125,6 +144,43 @@ const Newtab = () => {
       // Use this space to do anything else after the state has been updated
     });
   };
+
+  // Function to open the modal for a specific counter
+  const openCounterModal = (counterId) => {
+    const counterToEdit = counters.find(counter => counter.id === counterId);
+    setEditingCard(counterToEdit); // Reuse the editingCard state for editing counters
+    setIsModalOpen(true);
+  };
+
+  const countersDrawer = (
+    <Drawer
+      anchor="right" // This specifies which side of the screen the drawer will appear from
+      open={isDrawerOpen} // This controls whether the drawer is open or closed
+      onClose={toggleDrawer(false)} // This function is called when the drawer should close
+      onMouseLeave={handleMouseLeave}
+    >
+      <Box
+        sx={{ width: 250 }} // Adjust the width of the drawer content as needed
+        role="presentation"
+        onClick={toggleDrawer(false)}
+        onKeyDown={toggleDrawer(false)}
+      >
+        {counters.map((counter) => (
+          <CounterCard
+            key={counter.id}
+            counter={counter}
+            onEdit={openCounterModal}
+            onIncrease={() => updateCounterNumber(counter.id, 1)}
+            onDecrease={() => updateCounterNumber(counter.id, -1)}
+          />
+        ))}
+        <Button onClick={addCounter}>
+          <AddCircleOutlineIcon />
+          Add Counter
+        </Button>
+      </Box>
+    </Drawer>
+  );
 
   // Add UI elements for displaying counters
   const countersUI = (
@@ -294,12 +350,23 @@ const Newtab = () => {
     });
   }, []);
 
+
+
   return (
     <div className="App" style={{ backgroundImage: `url(${backgroundImageUrl})`, backgroundSize: 'cover' }}>
       <header className="App-header">
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-          {countersUI}
-        </Box>
+        <div
+          onMouseEnter={handleMouseEnter}
+          style={{
+            position: 'fixed',
+            top: 0,
+            right: 0,
+            width: '10px',
+            height: '100%',
+            zIndex: 1300 // Ensure it's above other content
+          }}
+        />
+        {countersDrawer}
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', p: 2 }}>
           <Typography variant="h2" component="h2" sx={{
             fontWeight: 'bold',
@@ -351,7 +418,7 @@ const Newtab = () => {
             <AddCircleOutlineIcon sx={{ fontSize: 'large' }} />
           </Button>
         </Box>
-      </header>
+      </header >
       <Modal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -452,7 +519,7 @@ const Newtab = () => {
           </Box>
         </Fade>
       </Modal>
-    </div>
+    </div >
   );
 };
 
