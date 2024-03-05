@@ -3,6 +3,9 @@ import logo from '../../assets/img/logo.svg';
 import './Newtab.css';
 import './Newtab.scss';
 import CounterCard from './components/CounterCard';
+import EditModal from './components/EditModal';
+import LinkCard from './components/LinkCard';
+
 
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -395,140 +398,27 @@ const Newtab = () => {
         </Box>
         <Box sx={{ display: 'flex', overflowX: 'auto', p: 1 }}>
           {cards.map((card) => (
-            <Card
+            <LinkCard
               key={card.id}
-              sx={{ maxWidth: 345, m: 1, display: 'flex', flexDirection: 'column' }}
-              onClick={() => window.open(card.link, '_blank')} // Make the card clickable
-            >
-              <CardMedia
-                component="img"
-                alt="green iguana"
-                height="140"
-                image="/static/images/cards/contemplative-reptile.jpg"
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {card.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {card.description}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button size="small" onClick={(e) => editCard(e, card.id)}>
-                  <EditIcon />
-                </Button>
-                <Button size="small" onClick={(e) => deleteCard(e, card.id)}>
-                  <DeleteIcon />
-                </Button>
-              </CardActions>
-            </Card>
+              card={card}
+              onEdit={editCard}
+              onDelete={deleteCard}
+            />
           ))}
           <Button onClick={addCard} sx={{ minWidth: 345, height: 'fit-content', m: 1 }}>
             <AddCircleOutlineIcon sx={{ fontSize: 'large' }} />
           </Button>
         </Box>
       </header >
-      <Modal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={isModalOpen}>
-          <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-            outline: 'none' // Disable focus outline for accessibility, consider a visible alternative
-          }}>
-            {editingCard && 'number' in editingCard ? (
-              // Counter card editing UI
-              <>
-                <Typography variant="h6" component="h2">
-                  Edit Counter
-                </Typography>
-                <TextField
-                  label="Title"
-                  value={editingCard.title}
-                  onChange={(e) => handleEditChange(e, 'title')}
-                  fullWidth
-                  margin="normal"
-                />
-                <TextField
-                  label="Number"
-                  type="number"
-                  value={editingCard.number}
-                  onChange={(e) => handleEditChange(e, 'number')}
-                  fullWidth
-                  margin="normal"
-                />
-                {/* Add any additional fields for editing counters here */}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={saveCard}
-                >
-                  Save
-                </Button>
-                {/* Add delete button */}
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => deleteCounter(editingCard.id)}
-                  sx={{ marginLeft: '8px' }} // Adjust spacing as needed
-                >
-                  Delete
-                </Button>
-              </>
-            ) : (
-              // Link card editing UI
-              <>
-                <Typography variant="h6" component="h2">
-                  Edit Card
-                </Typography>
-                <TextField
-                  label="Title"
-                  value={editingCard?.title || ''}
-                  onChange={(e) => handleEditChange(e, 'title')}
-                  fullWidth
-                  margin="normal"
-                />
-                <TextField
-                  label="Description"
-                  value={editingCard?.description || ''}
-                  onChange={(e) => handleEditChange(e, 'description')}
-                  fullWidth
-                  margin="normal"
-                  multiline
-                />
-                <TextField
-                  label="Link"
-                  value={editingCard?.link || ''}
-                  onChange={(e) => handleEditChange(e, 'link')}
-                  fullWidth
-                  margin="normal"
-                />
-                {/* Add more fields if needed for link cards */}
-              </>
-            )}
-            {/* Add more fields if needed */}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-              <Button variant="contained" color="primary" onClick={saveCard}>
-                Save
-              </Button>
-            </Box>
-          </Box>
-        </Fade>
-      </Modal>
+      <EditModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        editingCard={editingCard}
+        handleEditChange={handleEditChange}
+        saveCard={saveCard}
+        deleteCounter={deleteCounter}
+        deleteCard={deleteCard}
+      />
     </div >
   );
 };
