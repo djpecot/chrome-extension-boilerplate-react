@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import logo from '../../assets/img/logo.svg';
 import './Newtab.css';
 import './Newtab.scss';
+import CounterCard from './components/CounterCard';
 
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -32,6 +33,42 @@ const Newtab = () => {
   const [cards, setCards] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
+  const [counters, setCounters] = useState([
+    { id: uuidv4(), title: 'Counter 1', number: 23 },
+    // ... add more counters as needed
+  ]);
+
+  // Function to open the modal for a specific counter
+  const openCounterModal = (counterId) => {
+    const counterToEdit = counters.find(counter => counter.id === counterId);
+    setEditingCard(counterToEdit); // Reuse the editingCard state for editing counters
+    setIsModalOpen(true);
+  };
+
+  // Function to update a counter's number
+  const updateCounterNumber = (counterId, delta) => {
+    setCounters(prevCounters => prevCounters.map(counter => {
+      if (counter.id === counterId) {
+        return { ...counter, number: counter.number + delta };
+      }
+      return counter;
+    }));
+  };
+
+  // Add UI elements for displaying counters
+  const countersUI = (
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+      {counters.map((counter) => (
+        <CounterCard
+          key={counter.id}
+          counter={counter}
+          onEdit={openCounterModal}
+          onIncrease={() => updateCounterNumber(counter.id, 1)}
+          onDecrease={() => updateCounterNumber(counter.id, -1)}
+        />
+      ))}
+    </Box>
+  );
 
   // Load the cards from chrome.storage when the component mounts
   useEffect(() => {
@@ -74,19 +111,43 @@ const Newtab = () => {
 
   // Function to handle the changes in the modal's input fields
   const handleEditChange = (e, field) => {
-    setEditingCard({ ...editingCard, [field]: e.target.value });
+    if (field === 'number') {
+      // Update the editing counter's number in the state
+      const updatedNumber = parseInt(e.target.value, 10);
+      setEditingCard(prevEditingCard => ({
+        ...prevEditingCard,
+        number: updatedNumber
+      }));
+    } else {
+      // Update the editing link card's fields in the state
+      setEditingCard(prevEditingCard => ({
+        ...prevEditingCard,
+        [field]: e.target.value
+      }));
+    }
   };
 
-  // Function to save the edited card
+  // Function to save the edited card or counter
   const saveCard = () => {
-    const updatedCards = cards.map(card => {
-      if (card.id === editingCard.id) {
-        return editingCard;
-      }
-      return card;
-    });
-    setCards(updatedCards);
-    chrome.storage.sync.set({ cards: updatedCards });
+    if ('number' in editingCard) {
+      // It's a counter card, update the counters state
+      setCounters(prevCounters => prevCounters.map(counter => {
+        if (counter.id === editingCard.id) {
+          return { ...counter, number: editingCard.number };
+        }
+        return counter;
+      }));
+    } else {
+      // It's a link card, update the cards state
+      const updatedCards = cards.map(card => {
+        if (card.id === editingCard.id) {
+          return { ...editingCard };
+        }
+        return card;
+      });
+      setCards(updatedCards);
+      chrome.storage.sync.set({ cards: updatedCards });
+    }
     setIsModalOpen(false);
   };
 
@@ -151,6 +212,7 @@ const Newtab = () => {
   return (
     <div className="App">
       <header className="App-header">
+        {countersUI}
         <Box sx={{ display: 'flex', overflowX: 'auto', p: 1 }}>
           {cards.map((card) => (
             <Card
@@ -208,31 +270,53 @@ const Newtab = () => {
             p: 4,
             outline: 'none' // Disable focus outline for accessibility, consider a visible alternative
           }}>
-            <Typography variant="h6" component="h2">
-              Edit Card
-            </Typography>
-            <TextField
-              label="Title"
-              value={editingCard?.title || ''}
-              onChange={(e) => handleEditChange(e, 'title')}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Description"
-              value={editingCard?.description || ''}
-              onChange={(e) => handleEditChange(e, 'description')}
-              fullWidth
-              margin="normal"
-              multiline
-            />
-            <TextField
-              label="Link"
-              value={editingCard?.link || ''}
-              onChange={(e) => handleEditChange(e, 'link')}
-              fullWidth
-              margin="normal"
-            />
+            {editingCard && 'number' in editingCard ? (
+              // Counter card editing UI
+              <>
+                <Typography variant="h6" component="h2">
+                  Edit Counter
+                </Typography>
+                <TextField
+                  label="Number"
+                  type="number"
+                  value={editingCard.number}
+                  onChange={(e) => handleEditChange(e, 'number')}
+                  fullWidth
+                  margin="normal"
+                />
+                {/* Add any additional fields for editing counters here */}
+              </>
+            ) : (
+              // Link card editing UI
+              <>
+                <Typography variant="h6" component="h2">
+                  Edit Card
+                </Typography>
+                <TextField
+                  label="Title"
+                  value={editingCard?.title || ''}
+                  onChange={(e) => handleEditChange(e, 'title')}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  label="Description"
+                  value={editingCard?.description || ''}
+                  onChange={(e) => handleEditChange(e, 'description')}
+                  fullWidth
+                  margin="normal"
+                  multiline
+                />
+                <TextField
+                  label="Link"
+                  value={editingCard?.link || ''}
+                  onChange={(e) => handleEditChange(e, 'link')}
+                  fullWidth
+                  margin="normal"
+                />
+                {/* Add more fields if needed for link cards */}
+              </>
+            )}
             {/* Add more fields if needed */}
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
               <Button variant="contained" color="primary" onClick={saveCard}>
