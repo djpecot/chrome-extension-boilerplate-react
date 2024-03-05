@@ -8,22 +8,10 @@ import LinkCard from './components/LinkCard';
 
 
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import RemoveIcon from '@mui/icons-material/Remove';
-import AddIcon from '@mui/icons-material/Add';
 import { v4 as uuidv4 } from 'uuid'; // You need to install uuid to generate unique ids
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import Modal from '@mui/material/Modal';
-import Backdrop from '@mui/material/Backdrop';
-import Fade from '@mui/material/Fade';
-import TextField from '@mui/material/TextField';
 import Drawer from '@mui/material/Drawer';
 import BarChartIcon from '@mui/icons-material/BarChart';
 
