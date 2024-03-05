@@ -22,6 +22,7 @@ import Backdrop from '@mui/material/Backdrop';
 import Fade from '@mui/material/Fade';
 import TextField from '@mui/material/TextField';
 import Drawer from '@mui/material/Drawer';
+import BarChartIcon from '@mui/icons-material/BarChart';
 
 
 const Newtab = () => {
@@ -366,6 +367,15 @@ const Newtab = () => {
             zIndex: 1300 // Ensure it's above other content
           }}
         />
+        <BarChartIcon
+          sx={{
+            position: 'fixed',
+            top: '50%',
+            right: '10px', // Align with the invisible div
+            transform: 'translateY(-50%)',
+            fontSize: '3rem', // Increased icon size
+            zIndex: 1300 // Ensure it's above other content
+          }} />
         {countersDrawer}
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', p: 2 }}>
           <Typography variant="h2" component="h2" sx={{
