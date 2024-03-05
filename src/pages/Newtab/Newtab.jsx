@@ -14,6 +14,8 @@ import { v4 as uuidv4 } from 'uuid'; // You need to install uuid to generate uni
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Drawer from '@mui/material/Drawer';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent } from '@mui/lab';
+import parseString from 'xml2js';
 
 
 const Newtab = () => {
@@ -34,6 +36,18 @@ const Newtab = () => {
   const [inspirationalQuote, setInspirationalQuote] = useState('Persistence powers passion.');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [feedItems, setFeedItems] = useState([]);
+
+  useEffect(() => {
+    fetch('https://www.upwork.com/ab/feed/jobs/rss?paging=0%3B10&sort=recency&api_params=1&q=&securityToken=1790f12c4e0908e109a7acdfccbcff0623d32bcfe388941ad614e2c8e9e1d86b729812c664e2ba5fe52357a2709d8e90ec96afb7abcb3a46e72fa80ac3bd74dc&userUid=1316015600783425536&orgUid=1625602512699682816')
+      .then(response => response.text())
+      .then(str => parseString.parseStringPromise(str))
+      .then(result => {
+        const items = result.rss.channel[0].item.slice(0, 5);
+        setFeedItems(items.map(item => item.title[0]));
+      })
+      .catch(console.error);
+  }, []);
 
 
 
@@ -172,24 +186,6 @@ const Newtab = () => {
         </Button>
       </Box>
     </Drawer>
-  );
-
-  // Add UI elements for displaying counters
-  const countersUI = (
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-      {counters.map((counter) => (
-        <CounterCard
-          key={counter.id}
-          counter={counter}
-          onEdit={openCounterModal}
-          onIncrease={() => updateCounterNumber(counter.id, 1)}
-          onDecrease={() => updateCounterNumber(counter.id, -1)}
-        />
-      ))}
-      <Button onClick={addCounter} sx={{ minWidth: 'fit-content', height: 'fit-content', m: 1 }}>
-        <AddCircleOutlineIcon sx={{ fontSize: 'large' }} />
-      </Button>
-    </Box>
   );
 
   // Load the cards from chrome.storage when the component mounts
@@ -347,6 +343,18 @@ const Newtab = () => {
   return (
     <div className="App" style={{ backgroundImage: `url(${backgroundImageUrl})`, backgroundSize: 'cover' }}>
       <header className="App-header">
+        <Timeline position="alternate">
+          {feedItems.map((title, index) => (
+            <TimelineItem key={index}>
+              <TimelineSeparator>
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography>{title}</Typography>
+              </TimelineContent>
+            </TimelineItem>
+          ))}
+        </Timeline>
         <div
           onMouseEnter={handleMouseEnter}
           style={{
