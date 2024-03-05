@@ -14,7 +14,8 @@
     "newtab": "newtab.html"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "https://windmill.automationarchitech.com/*"
   ],
   "icons": {
     "128": "icon-128.png"

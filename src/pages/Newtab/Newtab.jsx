@@ -47,6 +47,7 @@ const Newtab = () => {
     const newCard = {
       id: uuidv4(),
       title: 'New Card',
+      link: '', // Add a link field to the card,
       description: 'Description here',
       links: []
     };
@@ -56,14 +57,16 @@ const Newtab = () => {
   };
 
   // Function to delete a card and update chrome.storage
-  const deleteCard = (cardId) => {
+  const deleteCard = (event, cardId) => {
+    event.stopPropagation(); // Prevent event from bubbling up to the card's onClick
     const updatedCards = cards.filter(card => card.id !== cardId);
     setCards(updatedCards);
     chrome.storage.sync.set({ cards: updatedCards });
   };
 
   // Function to open the modal with the card's data
-  const editCard = (cardId) => {
+  const editCard = (event, cardId) => {
+    event.stopPropagation(); // Prevent event from bubbling up to the card's onClick
     const cardToEdit = cards.find(card => card.id === cardId);
     setEditingCard(cardToEdit);
     setIsModalOpen(true);
@@ -150,7 +153,11 @@ const Newtab = () => {
       <header className="App-header">
         <Box sx={{ display: 'flex', overflowX: 'auto', p: 1 }}>
           {cards.map((card) => (
-            <Card key={card.id} sx={{ maxWidth: 345, m: 1, display: 'flex', flexDirection: 'column' }}>
+            <Card
+              key={card.id}
+              sx={{ maxWidth: 345, m: 1, display: 'flex', flexDirection: 'column' }}
+              onClick={() => window.open(card.link, '_blank')} // Make the card clickable
+            >
               <CardMedia
                 component="img"
                 alt="green iguana"
@@ -166,10 +173,10 @@ const Newtab = () => {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small" onClick={() => editCard(card.id)}>
+                <Button size="small" onClick={(e) => editCard(e, card.id)}>
                   <EditIcon />
                 </Button>
-                <Button size="small" onClick={() => deleteCard(card.id)}>
+                <Button size="small" onClick={(e) => deleteCard(e, card.id)}>
                   <DeleteIcon />
                 </Button>
               </CardActions>
@@ -218,6 +225,13 @@ const Newtab = () => {
               fullWidth
               margin="normal"
               multiline
+            />
+            <TextField
+              label="Link"
+              value={editingCard?.link || ''}
+              onChange={(e) => handleEditChange(e, 'link')}
+              fullWidth
+              margin="normal"
             />
             {/* Add more fields if needed */}
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
