@@ -16,11 +16,16 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.11",
+    "@mui/lab": "^5.0.0-alpha.167",
     "@mui/material": "^5.15.11",
     "axios": "^1.6.7",
+    "buffer": "^6.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "uuid": "^9.0.1"
+    "stream-browserify": "^3.0.0",
+    "timers-browserify": "^2.0.12",
+    "uuid": "^9.0.1",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",

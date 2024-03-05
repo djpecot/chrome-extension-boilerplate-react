@@ -131,6 +131,11 @@ var options = {
     extensions: fileExtensions
       .map((extension) => '.' + extension)
       .concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
+    fallback: {
+      "buffer": require.resolve("buffer/"),
+      "timers": require.resolve("timers-browserify"),
+      "stream": require.resolve("stream-browserify")
+    },
   },
   plugins: [
     isDevelopment && new ReactRefreshWebpackPlugin(),
