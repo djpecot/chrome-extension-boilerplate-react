@@ -62,6 +62,14 @@ const Newtab = () => {
     chrome.storage.sync.set({ counters: [...counters, newCounter] });
   };
 
+  // Function to delete a counter and update chrome.storage
+  const deleteCounter = (counterId) => {
+    const updatedCounters = counters.filter(counter => counter.id !== counterId);
+    setCounters(updatedCounters);
+    chrome.storage.sync.set({ counters: updatedCounters });
+    setIsModalOpen(false); // Close the modal after deletion
+  };
+
   // Function to open the modal for a specific counter
   const openCounterModal = (counterId) => {
     const counterToEdit = counters.find(counter => counter.id === counterId);
@@ -156,22 +164,12 @@ const Newtab = () => {
     setIsModalOpen(true);
   };
 
-  // Function to handle the changes in the modal's input fields
+  // Update the handleEditChange function to include the title
   const handleEditChange = (e, field) => {
-    if (field === 'number') {
-      // Update the editing counter's number in the state
-      const updatedNumber = parseInt(e.target.value, 10);
-      setEditingCard(prevEditingCard => ({
-        ...prevEditingCard,
-        number: updatedNumber
-      }));
-    } else {
-      // Update the editing link card's fields in the state
-      setEditingCard(prevEditingCard => ({
-        ...prevEditingCard,
-        [field]: e.target.value
-      }));
-    }
+    setEditingCard(prevEditingCard => ({
+      ...prevEditingCard,
+      [field]: e.target.value
+    }));
   };
 
   // Function to save the edited card or counter
@@ -181,7 +179,7 @@ const Newtab = () => {
       setCounters(prevCounters => {
         const updatedCounters = prevCounters.map(counter => {
           if (counter.id === editingCard.id) {
-            return { ...counter, number: editingCard.number };
+            return { ...counter, ...editingCard };
           }
           return counter;
         });
@@ -334,6 +332,13 @@ const Newtab = () => {
                   Edit Counter
                 </Typography>
                 <TextField
+                  label="Title"
+                  value={editingCard.title}
+                  onChange={(e) => handleEditChange(e, 'title')}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
                   label="Number"
                   type="number"
                   value={editingCard.number}
@@ -342,6 +347,22 @@ const Newtab = () => {
                   margin="normal"
                 />
                 {/* Add any additional fields for editing counters here */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={saveCard}
+                >
+                  Save
+                </Button>
+                {/* Add delete button */}
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => deleteCounter(editingCard.id)}
+                  sx={{ marginLeft: '8px' }} // Adjust spacing as needed
+                >
+                  Delete
+                </Button>
               </>
             ) : (
               // Link card editing UI
