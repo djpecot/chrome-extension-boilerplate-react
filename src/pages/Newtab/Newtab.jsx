@@ -497,22 +497,6 @@ const Newtab = () => {
       </Box>
       {currentPage === 'default' && (
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-          <Box sx={{ width: '30%', minWidth: '250px' }}>
-            <Timeline position="alternate">
-              {feedItems.map((item, index) => (
-                <TimelineItem key={index}>
-                  <TimelineSeparator>
-                    <TimelineConnector />
-                  </TimelineSeparator>
-                  <TimelineContent>
-                    <Typography><a href={item.link} target="_blank" rel="noopener noreferrer">
-                      {item.title}
-                    </a></Typography>
-                  </TimelineContent>
-                </TimelineItem>
-              ))}
-            </Timeline>
-          </Box>
           <header className="App-header">
             <div
               onMouseEnter={handleMouseEnter}
