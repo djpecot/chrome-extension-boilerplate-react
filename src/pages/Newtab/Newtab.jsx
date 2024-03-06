@@ -346,72 +346,76 @@ const Newtab = () => {
 
   return (
     <div className="App" style={{ backgroundImage: `url(${backgroundImageUrl})`, backgroundSize: 'cover' }}>
-      <header className="App-header">
-        <Timeline position="alternate">
-          {feedItems.map((item, index) => (
-            <TimelineItem key={index}>
-              <TimelineSeparator>
-                <TimelineConnector />
-              </TimelineSeparator>
-              <TimelineContent>
-                <Typography><a href={item.link} target="_blank" rel="noopener noreferrer">
-                  {item.title}
-                </a></Typography>
-              </TimelineContent>
-            </TimelineItem>
-          ))}
-        </Timeline>
-        <div
-          onMouseEnter={handleMouseEnter}
-          style={{
-            position: 'fixed',
-            top: 0,
-            right: 0,
-            width: '10px',
-            height: '100%',
-            zIndex: 1300 // Ensure it's above other content
-          }}
-        />
-        <BarChartIcon
-          sx={{
-            position: 'fixed',
-            top: '50%',
-            right: '10px', // Align with the invisible div
-            transform: 'translateY(-50%)',
-            fontSize: '3rem', // Increased icon size
-            zIndex: 1300 // Ensure it's above other content
-          }} />
-        {countersDrawer}
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', p: 2 }}>
-          <Typography variant="h2" component="h2" sx={{
-            fontWeight: 'bold',
-            fontSize: '8rem', // Doubled from '4rem' to '8rem'
-            textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
-          }}>
-            {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </Typography>
-          <Typography variant="subtitle1" sx={{
-            fontWeight: 'bold',
-            fontSize: '3rem', // Doubled from '1.5rem' to '3rem'
-            textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
-          }}>
-            {inspirationalQuote}
-          </Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+        <Box sx={{ width: '30%', minWidth: '250px' }}>
+          <Timeline position="alternate">
+            {feedItems.map((item, index) => (
+              <TimelineItem key={index}>
+                <TimelineSeparator>
+                  <TimelineConnector />
+                </TimelineSeparator>
+                <TimelineContent>
+                  <Typography><a href={item.link} target="_blank" rel="noopener noreferrer">
+                    {item.title}
+                  </a></Typography>
+                </TimelineContent>
+              </TimelineItem>
+            ))}
+          </Timeline>
         </Box>
-        <Box sx={{ display: 'flex', overflowX: 'auto', p: 1 }}>
-          {cards.map((card) => (
-            <LinkCard
-              key={card.id}
-              card={card}
-              onEdit={editCard}
-              onDelete={deleteCard}
-            />
-          ))}
-          <Button onClick={addCard} sx={{ minWidth: 345, height: 'fit-content', m: 1 }}>
-            <AddCircleOutlineIcon sx={{ fontSize: 'large' }} />
-          </Button>
-        </Box>
-      </header >
+        <header className="App-header">
+          <div
+            onMouseEnter={handleMouseEnter}
+            style={{
+              position: 'fixed',
+              top: 0,
+              right: 0,
+              width: '10px',
+              height: '100%',
+              zIndex: 1300 // Ensure it's above other content
+            }}
+          />
+          <BarChartIcon
+            sx={{
+              position: 'fixed',
+              top: '50%',
+              right: '10px', // Align with the invisible div
+              transform: 'translateY(-50%)',
+              fontSize: '3rem', // Increased icon size
+              zIndex: 1300 // Ensure it's above other content
+            }} />
+          {countersDrawer}
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', p: 2 }}>
+            <Typography variant="h2" component="h2" sx={{
+              fontWeight: 'bold',
+              fontSize: '8rem', // Doubled from '4rem' to '8rem'
+              textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+            }}>
+              {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </Typography>
+            <Typography variant="subtitle1" sx={{
+              fontWeight: 'bold',
+              fontSize: '3rem', // Doubled from '1.5rem' to '3rem'
+              textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
+            }}>
+              {inspirationalQuote}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', overflowX: 'auto', p: 1 }}>
+            {cards.map((card) => (
+              <LinkCard
+                key={card.id}
+                card={card}
+                onEdit={editCard}
+                onDelete={deleteCard}
+              />
+            ))}
+            <Button onClick={addCard} sx={{ minWidth: 345, height: 'fit-content', m: 1 }}>
+              <AddCircleOutlineIcon sx={{ fontSize: 'large' }} />
+            </Button>
+          </Box>
+        </header >
+      </Box>
       <EditModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
