@@ -7,6 +7,8 @@ import EditModal from './components/EditModal';
 import LinkCard from './components/LinkCard';
 import UpworkTimeline from './components/UpworkTimeline'
 import { List, ListItemButton, ListItemText } from '@mui/material';
+import NavigationDrawer from './components/NavigationDrawer';
+
 
 import MuiDrawer from '@mui/material/Drawer';
 import { styled, useTheme } from '@mui/material/styles';
@@ -226,26 +228,6 @@ const Newtab = () => {
     setIsModalOpen(true);
   };
 
-  const navDrawerContent = (
-    <Box
-      sx={{ width: isNavDrawerOpen ? 250 : 'auto' }}
-      role="presentation"
-      onMouseEnter={handleNavDrawerMouseEnter}
-      onMouseLeave={handleNavDrawerMouseLeave}
-    >
-      <List>
-        <ListItemButton selected={currentPage === 'default'} onClick={showDefaultPage}>
-          <HomeIcon />
-          {isNavDrawerOpen && <ListItemText primary="Home" />}
-        </ListItemButton>
-        <ListItemButton selected={currentPage === 'upwork'} onClick={showUpworkTimeline}>
-          <ViewTimelineOutlinedIcon />
-          {isNavDrawerOpen && <ListItemText primary="View Upwork Timeline" />}
-        </ListItemButton>
-      </List>
-    </Box>
-  );
-
   const countersDrawer = (
     <Drawer
       anchor="right" // This specifies which side of the screen the drawer will appear from
@@ -368,24 +350,6 @@ const Newtab = () => {
     setIsModalOpen(false);
   };
 
-  // Function to increase the counter and save to chrome.storage
-  const increaseCounter = () => {
-    setCounter(prevCounter => {
-      const newCounter = prevCounter + 1;
-      chrome.storage.sync.set({ counter: newCounter });
-      return newCounter;
-    });
-  };
-
-  // Function to decrease the counter and save to chrome.storage
-  const decreaseCounter = () => {
-    setCounter(prevCounter => {
-      const newCounter = prevCounter - 1;
-      chrome.storage.sync.set({ counter: newCounter });
-      return newCounter;
-    });
-  };
-
   // Load the counter value from chrome.storage when the component mounts
   useEffect(() => {
     chrome.storage.sync.get(['counter'], (result) => {
@@ -398,23 +362,6 @@ const Newtab = () => {
       }
     });
   }, []);
-
-  // Step 2: Update the addLink function
-  const addLink = () => {
-    if (linkTitle && linkUrl) {
-      let modifiedUrl = linkUrl;
-      if (!/^https?:\/\//i.test(modifiedUrl)) {
-        modifiedUrl = 'https://' + modifiedUrl;
-      }
-
-      const newLinks = [...links, { title: linkTitle, url: modifiedUrl }];
-      setLinks(newLinks);
-      setLinkTitle('');
-      setLinkUrl('');
-      // Save the new links array to chrome.storage
-      chrome.storage.sync.set({ links: newLinks });
-    }
-  };
 
   // Step 4: Load links from chrome.storage when component mounts
   useEffect(() => {
@@ -431,66 +378,14 @@ const Newtab = () => {
   return (
     <div className="App" style={{ backgroundImage: `url(${backgroundImageUrl})`, backgroundSize: 'cover' }}>
       <Box sx={{ display: 'flex' }}>
-        <MenuDrawer
-          variant="permanent"
-          open={isNavDrawerOpen}
-          onMouseEnter={handleNavDrawerMouseEnter}
-          onMouseLeave={handleNavDrawerMouseLeave}
-          PaperProps={{
-            sx: {
-              backgroundColor: "transparent", // Add this line if you want the drawer background to be transparent
-              color: 'white', // And this if you want the text/icons to be white
-            }
-          }}
-        >
-          <List>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: isNavDrawerOpen ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-                selected={currentPage === 'default'}
-                onClick={showDefaultPage}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: isNavDrawerOpen ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <HomeIcon />
-                </ListItemIcon>
-                <ListItemText primary="Home" sx={{ opacity: isNavDrawerOpen ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: isNavDrawerOpen ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-                selected={currentPage === 'timeline'}
-                onClick={showUpworkTimeline}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: isNavDrawerOpen ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <ViewTimelineOutlinedIcon />
-                </ListItemIcon>
-                <ListItemText primary="Timeline" sx={{ opacity: isNavDrawerOpen ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-            {/* Add more ListItems here for other menu items */}
-          </List>
-        </MenuDrawer>
+        <NavigationDrawer
+          isNavDrawerOpen={isNavDrawerOpen}
+          currentPage={currentPage}
+          showDefaultPage={showDefaultPage}
+          showUpworkTimeline={showUpworkTimeline}
+          handleMouseEnter={handleNavDrawerMouseEnter}
+          handleMouseLeave={handleNavDrawerMouseLeave}
+        />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           {/* Main content goes here */}
         </Box>
