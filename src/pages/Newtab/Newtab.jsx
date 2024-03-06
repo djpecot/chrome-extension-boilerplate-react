@@ -9,6 +9,7 @@ import UpworkTimeline from './components/UpworkTimeline'
 import { List, ListItemButton, ListItemText } from '@mui/material';
 
 
+
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -16,6 +17,9 @@ import { v4 as uuidv4 } from 'uuid'; // You need to install uuid to generate uni
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Drawer from '@mui/material/Drawer';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import ViewTimelineOutlinedIcon from '@mui/icons-material/ViewTimelineOutlined';
+import HomeIcon from '@mui/icons-material/Home';
+
 import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent } from '@mui/lab';
 import parseString from 'xml2js';
 
@@ -37,7 +41,9 @@ const Newtab = () => {
   // At the top of your component, add a new state for the quote
   const [inspirationalQuote, setInspirationalQuote] = useState('Persistence powers passion.');
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isNavDrawerOpen, setIsNavDrawerOpen] = useState(false); // State for the new navigation drawer
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State for the other existing drawer
+
   const [feedItems, setFeedItems] = useState([]);
   const [currentPage, setCurrentPage] = useState('default');
   // ... other state and useEffect hooks remain unchanged
@@ -62,8 +68,17 @@ const Newtab = () => {
 
 
 
-  // Add a ref to the drawer
-  const drawerRef = useRef(null);
+  // Refs for both drawers
+  const navDrawerRef = useRef(null);
+  const counterDrawerRef = useRef(null);
+
+  // Handlers for the navigation drawer
+  const handleNavDrawerMouseEnter = () => {
+    setIsNavDrawerOpen(true);
+  };
+  const handleNavDrawerMouseLeave = () => {
+    setIsNavDrawerOpen(false);
+  };
 
   // Function to open the drawer on hover
   const handleMouseEnter = () => {
@@ -168,6 +183,26 @@ const Newtab = () => {
     setEditingCard(counterToEdit); // Reuse the editingCard state for editing counters
     setIsModalOpen(true);
   };
+
+  const navDrawerContent = (
+    <Box
+      sx={{ width: isNavDrawerOpen ? 250 : 'auto' }}
+      role="presentation"
+      onMouseEnter={handleNavDrawerMouseEnter}
+      onMouseLeave={handleNavDrawerMouseLeave}
+    >
+      <List>
+        <ListItemButton selected={currentPage === 'default'} onClick={showDefaultPage}>
+          <HomeIcon />
+          {isNavDrawerOpen && <ListItemText primary="Home" />}
+        </ListItemButton>
+        <ListItemButton selected={currentPage === 'upwork'} onClick={showUpworkTimeline}>
+          <ViewTimelineOutlinedIcon />
+          {isNavDrawerOpen && <ListItemText primary="View Upwork Timeline" />}
+        </ListItemButton>
+      </List>
+    </Box>
+  );
 
   const countersDrawer = (
     <Drawer
@@ -353,14 +388,26 @@ const Newtab = () => {
 
   return (
     <div className="App" style={{ backgroundImage: `url(${backgroundImageUrl})`, backgroundSize: 'cover' }}>
-      <List component="nav" aria-label="main mailbox folders">
-        <ListItemButton selected={currentPage === 'default'} onClick={showDefaultPage}>
-          <ListItemText primary="Home" />
-        </ListItemButton>
-        <ListItemButton selected={currentPage === 'upwork'} onClick={showUpworkTimeline}>
-          <ListItemText primary="View Upwork Timeline" />
-        </ListItemButton>
-      </List>
+      <Drawer
+        variant="permanent"
+        open={isNavDrawerOpen}
+        onClose={toggleDrawer(false)}
+        sx={{
+          width: isNavDrawerOpen ? 250 : 57, // Adjust the width of the drawer as needed
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: isNavDrawerOpen ? 250 : 57, // Adjust the width of the drawer as needed
+            boxSizing: 'border-box',
+            overflowX: 'hidden',
+          },
+        }}
+        PaperProps={{
+          onMouseEnter: handleNavDrawerMouseEnter,
+          onMouseLeave: handleNavDrawerMouseLeave,
+        }}
+      >
+        {navDrawerContent}
+      </Drawer>
       {currentPage === 'default' && (
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
           <Box sx={{ width: '30%', minWidth: '250px' }}>
