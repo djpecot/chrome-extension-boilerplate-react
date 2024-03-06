@@ -44,7 +44,11 @@ const Newtab = () => {
       .then(str => parseString.parseStringPromise(str))
       .then(result => {
         const items = result.rss.channel[0].item.slice(0, 5);
-        setFeedItems(items.map(item => item.title[0]));
+        // Update the setFeedItems to include both title and link
+        setFeedItems(items.map(item => ({
+          title: item.title[0],
+          link: item.link[0]
+        })));
       })
       .catch(console.error);
   }, []);
@@ -344,13 +348,15 @@ const Newtab = () => {
     <div className="App" style={{ backgroundImage: `url(${backgroundImageUrl})`, backgroundSize: 'cover' }}>
       <header className="App-header">
         <Timeline position="alternate">
-          {feedItems.map((title, index) => (
+          {feedItems.map((item, index) => (
             <TimelineItem key={index}>
               <TimelineSeparator>
                 <TimelineConnector />
               </TimelineSeparator>
               <TimelineContent>
-                <Typography>{title}</Typography>
+                <Typography><a href={item.link} target="_blank" rel="noopener noreferrer">
+                  {item.title}
+                </a></Typography>
               </TimelineContent>
             </TimelineItem>
           ))}
