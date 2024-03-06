@@ -8,8 +8,8 @@ import LinkCard from './components/LinkCard';
 import UpworkTimeline from './components/UpworkTimeline'
 import { List, ListItemButton, ListItemText } from '@mui/material';
 
-
-
+import MuiDrawer from '@mui/material/Drawer';
+import { styled, useTheme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -19,14 +19,56 @@ import Drawer from '@mui/material/Drawer';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ViewTimelineOutlinedIcon from '@mui/icons-material/ViewTimelineOutlined';
 import HomeIcon from '@mui/icons-material/Home';
-
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent } from '@mui/lab';
 import parseString from 'xml2js';
+
+const drawerWidth = 240;
+
+const openedMixin = (theme) => ({
+  width: drawerWidth,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+});
+
+const closedMixin = (theme) => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
+const MenuDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    ...(open && {
+      ...openedMixin(theme),
+      '& .MuiDrawer-paper': openedMixin(theme),
+    }),
+    ...(!open && {
+      ...closedMixin(theme),
+      '& .MuiDrawer-paper': closedMixin(theme),
+    }),
+  }),
+);
 
 
 const Newtab = () => {
 
   // Step 1: Add state for the link title and URL
+  const theme = useTheme();
   const [linkTitle, setLinkTitle] = useState('');
   const [linkUrl, setLinkUrl] = useState('');
   const [links, setLinks] = useState([]);
@@ -388,26 +430,71 @@ const Newtab = () => {
 
   return (
     <div className="App" style={{ backgroundImage: `url(${backgroundImageUrl})`, backgroundSize: 'cover' }}>
-      <Drawer
-        variant="permanent"
-        open={isNavDrawerOpen}
-        onClose={toggleDrawer(false)}
-        sx={{
-          width: isNavDrawerOpen ? 250 : 57, // Adjust the width of the drawer as needed
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: isNavDrawerOpen ? 250 : 57, // Adjust the width of the drawer as needed
-            boxSizing: 'border-box',
-            overflowX: 'hidden',
-          },
-        }}
-        PaperProps={{
-          onMouseEnter: handleNavDrawerMouseEnter,
-          onMouseLeave: handleNavDrawerMouseLeave,
-        }}
-      >
-        {navDrawerContent}
-      </Drawer>
+      <Box sx={{ display: 'flex' }}>
+        <MenuDrawer
+          variant="permanent"
+          open={isNavDrawerOpen}
+          onMouseEnter={handleNavDrawerMouseEnter}
+          onMouseLeave={handleNavDrawerMouseLeave}
+          PaperProps={{
+            sx: {
+              backgroundColor: "transparent", // Add this line if you want the drawer background to be transparent
+              color: 'white', // And this if you want the text/icons to be white
+            }
+          }}
+        >
+          <List>
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: isNavDrawerOpen ? 'initial' : 'center',
+                  px: 2.5,
+                }}
+                selected={currentPage === 'default'}
+                onClick={showDefaultPage}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: isNavDrawerOpen ? 3 : 'auto',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <HomeIcon />
+                </ListItemIcon>
+                <ListItemText primary="Home" sx={{ opacity: isNavDrawerOpen ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: isNavDrawerOpen ? 'initial' : 'center',
+                  px: 2.5,
+                }}
+                selected={currentPage === 'timeline'}
+                onClick={showUpworkTimeline}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: isNavDrawerOpen ? 3 : 'auto',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <ViewTimelineOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Timeline" sx={{ opacity: isNavDrawerOpen ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+            {/* Add more ListItems here for other menu items */}
+          </List>
+        </MenuDrawer>
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          {/* Main content goes here */}
+        </Box>
+      </Box>
       {currentPage === 'default' && (
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
           <Box sx={{ width: '30%', minWidth: '250px' }}>
