@@ -391,7 +391,7 @@ const Newtab = () => {
         </Box>
       </Box>
       {currentPage === 'default' && (
-        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
           <header className="App-header">
             <div
               onMouseEnter={handleMouseEnter}

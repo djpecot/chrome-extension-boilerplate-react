@@ -66,6 +66,7 @@ const NavigationDrawer = ({ isNavDrawerOpen, currentPage, showDefaultPage, showU
                             minHeight: 48,
                             justifyContent: isNavDrawerOpen ? 'initial' : 'center',
                             px: 2.5,
+                            color: 'white'
                         }}
                         selected={currentPage === 'default'}
                         onClick={showDefaultPage}
@@ -75,6 +76,7 @@ const NavigationDrawer = ({ isNavDrawerOpen, currentPage, showDefaultPage, showU
                                 minWidth: 0,
                                 mr: isNavDrawerOpen ? 3 : 'auto',
                                 justifyContent: 'center',
+                                color: 'white'
                             }}
                         >
                             <HomeIcon />
@@ -88,6 +90,7 @@ const NavigationDrawer = ({ isNavDrawerOpen, currentPage, showDefaultPage, showU
                             minHeight: 48,
                             justifyContent: isNavDrawerOpen ? 'initial' : 'center',
                             px: 2.5,
+                            color: 'white'
                         }}
                         selected={currentPage === 'timeline'}
                         onClick={showUpworkTimeline}
@@ -97,6 +100,7 @@ const NavigationDrawer = ({ isNavDrawerOpen, currentPage, showDefaultPage, showU
                                 minWidth: 0,
                                 mr: isNavDrawerOpen ? 3 : 'auto',
                                 justifyContent: 'center',
+                                color: 'white'
                             }}
                         >
                             <ViewTimelineOutlinedIcon />
