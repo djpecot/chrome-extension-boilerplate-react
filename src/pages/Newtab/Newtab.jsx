@@ -5,6 +5,8 @@ import './Newtab.scss';
 import CounterCard from './components/CounterCard';
 import EditModal from './components/EditModal';
 import LinkCard from './components/LinkCard';
+import UpworkTimeline from './components/UpworkTimeline'
+import { List, ListItemButton, ListItemText } from '@mui/material';
 
 
 import Button from '@mui/material/Button';
@@ -37,6 +39,11 @@ const Newtab = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [feedItems, setFeedItems] = useState([]);
+  const [currentPage, setCurrentPage] = useState('default');
+  // ... other state and useEffect hooks remain unchanged
+
+  const showDefaultPage = () => setCurrentPage('default');
+  const showUpworkTimeline = () => setCurrentPage('upwork');
 
   useEffect(() => {
     fetch('https://www.upwork.com/ab/feed/jobs/rss?paging=0%3B10&sort=recency&api_params=1&q=&securityToken=1790f12c4e0908e109a7acdfccbcff0623d32bcfe388941ad614e2c8e9e1d86b729812c664e2ba5fe52357a2709d8e90ec96afb7abcb3a46e72fa80ac3bd74dc&userUid=1316015600783425536&orgUid=1625602512699682816')
@@ -346,76 +353,89 @@ const Newtab = () => {
 
   return (
     <div className="App" style={{ backgroundImage: `url(${backgroundImageUrl})`, backgroundSize: 'cover' }}>
-      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-        <Box sx={{ width: '30%', minWidth: '250px' }}>
-          <Timeline position="alternate">
-            {feedItems.map((item, index) => (
-              <TimelineItem key={index}>
-                <TimelineSeparator>
-                  <TimelineConnector />
-                </TimelineSeparator>
-                <TimelineContent>
-                  <Typography><a href={item.link} target="_blank" rel="noopener noreferrer">
-                    {item.title}
-                  </a></Typography>
-                </TimelineContent>
-              </TimelineItem>
-            ))}
-          </Timeline>
+      <List component="nav" aria-label="main mailbox folders">
+        <ListItemButton selected={currentPage === 'default'} onClick={showDefaultPage}>
+          <ListItemText primary="Home" />
+        </ListItemButton>
+        <ListItemButton selected={currentPage === 'upwork'} onClick={showUpworkTimeline}>
+          <ListItemText primary="View Upwork Timeline" />
+        </ListItemButton>
+      </List>
+      {currentPage === 'default' && (
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+          <Box sx={{ width: '30%', minWidth: '250px' }}>
+            <Timeline position="alternate">
+              {feedItems.map((item, index) => (
+                <TimelineItem key={index}>
+                  <TimelineSeparator>
+                    <TimelineConnector />
+                  </TimelineSeparator>
+                  <TimelineContent>
+                    <Typography><a href={item.link} target="_blank" rel="noopener noreferrer">
+                      {item.title}
+                    </a></Typography>
+                  </TimelineContent>
+                </TimelineItem>
+              ))}
+            </Timeline>
+          </Box>
+          <header className="App-header">
+            <div
+              onMouseEnter={handleMouseEnter}
+              style={{
+                position: 'fixed',
+                top: 0,
+                right: 0,
+                width: '10px',
+                height: '100%',
+                zIndex: 1300 // Ensure it's above other content
+              }}
+            />
+            <BarChartIcon
+              sx={{
+                position: 'fixed',
+                top: '50%',
+                right: '10px', // Align with the invisible div
+                transform: 'translateY(-50%)',
+                fontSize: '3rem', // Increased icon size
+                zIndex: 1300 // Ensure it's above other content
+              }} />
+            {countersDrawer}
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', p: 2 }}>
+              <Typography variant="h2" component="h2" sx={{
+                fontWeight: 'bold',
+                fontSize: '8rem', // Doubled from '4rem' to '8rem'
+                textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+              }}>
+                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </Typography>
+              <Typography variant="subtitle1" sx={{
+                fontWeight: 'bold',
+                fontSize: '3rem', // Doubled from '1.5rem' to '3rem'
+                textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
+              }}>
+                {inspirationalQuote}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', overflowX: 'auto', p: 1 }}>
+              {cards.map((card) => (
+                <LinkCard
+                  key={card.id}
+                  card={card}
+                  onEdit={editCard}
+                  onDelete={deleteCard}
+                />
+              ))}
+              <Button onClick={addCard} sx={{ minWidth: 345, height: 'fit-content', m: 1 }}>
+                <AddCircleOutlineIcon sx={{ fontSize: 'large' }} />
+              </Button>
+            </Box>
+          </header >
         </Box>
-        <header className="App-header">
-          <div
-            onMouseEnter={handleMouseEnter}
-            style={{
-              position: 'fixed',
-              top: 0,
-              right: 0,
-              width: '10px',
-              height: '100%',
-              zIndex: 1300 // Ensure it's above other content
-            }}
-          />
-          <BarChartIcon
-            sx={{
-              position: 'fixed',
-              top: '50%',
-              right: '10px', // Align with the invisible div
-              transform: 'translateY(-50%)',
-              fontSize: '3rem', // Increased icon size
-              zIndex: 1300 // Ensure it's above other content
-            }} />
-          {countersDrawer}
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', p: 2 }}>
-            <Typography variant="h2" component="h2" sx={{
-              fontWeight: 'bold',
-              fontSize: '8rem', // Doubled from '4rem' to '8rem'
-              textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
-            }}>
-              {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </Typography>
-            <Typography variant="subtitle1" sx={{
-              fontWeight: 'bold',
-              fontSize: '3rem', // Doubled from '1.5rem' to '3rem'
-              textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
-            }}>
-              {inspirationalQuote}
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', overflowX: 'auto', p: 1 }}>
-            {cards.map((card) => (
-              <LinkCard
-                key={card.id}
-                card={card}
-                onEdit={editCard}
-                onDelete={deleteCard}
-              />
-            ))}
-            <Button onClick={addCard} sx={{ minWidth: 345, height: 'fit-content', m: 1 }}>
-              <AddCircleOutlineIcon sx={{ fontSize: 'large' }} />
-            </Button>
-          </Box>
-        </header >
-      </Box>
+      )}
+      {currentPage === 'upwork' && (
+        <UpworkTimeline feedItems={feedItems} />
+      )}
       <EditModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
