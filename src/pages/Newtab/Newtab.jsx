@@ -16,8 +16,9 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Drawer from '@mui/material/Drawer';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import parseString from 'xml2js';
-import useUpworkFeed from '../../hooks/useFeedItems'
 
+import useUpworkFeed from '../../hooks/useFeedItems';
+import TextField from '@mui/material/TextField';
 
 
 const Newtab = () => {
@@ -35,13 +36,26 @@ const Newtab = () => {
   const [isNavDrawerOpen, setIsNavDrawerOpen] = useState(false); // State for the new navigation drawer
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State for the other existing drawer
   const [currentPage, setCurrentPage] = useState('default');
-  // ... other state and useEffect hooks remain unchanged
+  const [inputUrl, setInputUrl] = useState('');
+  const { feedItems, setUrl, refresh } = useUpworkFeed('https://www.upwork.com/ab/feed/jobs/rss?paging=0%3B10&sort=recency&api_params=1&q=&securityToken=...');
+
+  const handleUrlChange = (event) => {
+    setInputUrl(event.target.value);
+  };
+
+  const handleUrlSubmit = () => {
+    setUrl(inputUrl);
+  };
+
+  const handleRefresh = () => {
+    refresh();
+  };
 
   const showDefaultPage = () => setCurrentPage('default');
   const showUpworkTimeline = () => setCurrentPage('upwork');
 
-  const upworkFeedUrl = 'https://www.upwork.com/ab/feed/jobs/rss?budget=1500-&category2_uid=531770282580668420&hourly_rate=80-&q=chatgpt&sort=recency&job_type=hourly%2Cfixed&paging=0%3B50&api_params=1&securityToken=1790f12c4e0908e109a7acdfccbcff0623d32bcfe388941ad614e2c8e9e1d86b729812c664e2ba5fe52357a2709d8e90ec96afb7abcb3a46e72fa80ac3bd74dc&userUid=1316015600783425536&orgUid=1316015600787619841';
-  const feedItems = useUpworkFeed(upworkFeedUrl);
+  // const upworkFeedUrl = 'https://www.upwork.com/ab/feed/jobs/rss?budget=1500-&category2_uid=531770282580668420&hourly_rate=80-&q=chatgpt&sort=recency&job_type=hourly%2Cfixed&paging=0%3B50&api_params=1&securityToken=1790f12c4e0908e109a7acdfccbcff0623d32bcfe388941ad614e2c8e9e1d86b729812c664e2ba5fe52357a2709d8e90ec96afb7abcb3a46e72fa80ac3bd74dc&userUid=1316015600783425536&orgUid=1316015600787619841';
+  // const feedItems = useUpworkFeed(upworkFeedUrl);
 
 
 
@@ -382,7 +396,19 @@ const Newtab = () => {
         </Box>
       )}
       {currentPage === 'upwork' && (
-        <UpworkTimeline feedItems={feedItems} />
+        <>
+          <div>
+            <TextField
+              label="RSS URL"
+              value={inputUrl}
+              onChange={handleUrlChange}
+            />
+            <Button onClick={handleUrlSubmit}>Load Feed</Button>
+            <Button onClick={handleRefresh}>Refresh Feed</Button>
+          </div>
+          <UpworkTimeline feedItems={feedItems} />
+
+        </>
       )}
       <EditModal
         isModalOpen={isModalOpen}
