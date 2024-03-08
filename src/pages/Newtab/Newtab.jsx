@@ -15,11 +15,54 @@ import { v4 as uuidv4 } from 'uuid'; // You need to install uuid to generate uni
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Drawer from '@mui/material/Drawer';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import parseString from 'xml2js';
+import InputBase from '@mui/material/InputBase';
+import SearchIcon from '@mui/icons-material/Search';
+import { styled, alpha } from '@mui/material/styles';
+
 
 import useUpworkFeed from '../../hooks/useFeedItems';
 import TextField from '@mui/material/TextField';
 
+
+// Styled components for the search bar
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(3),
+    width: 'auto',
+  },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      width: '20ch',
+    },
+  },
+}));
 
 const Newtab = () => {
   const [cards, setCards] = useState([]);
@@ -53,12 +96,6 @@ const Newtab = () => {
 
   const showDefaultPage = () => setCurrentPage('default');
   const showUpworkTimeline = () => setCurrentPage('upwork');
-
-  // const upworkFeedUrl = 'https://www.upwork.com/ab/feed/jobs/rss?budget=1500-&category2_uid=531770282580668420&hourly_rate=80-&q=chatgpt&sort=recency&job_type=hourly%2Cfixed&paging=0%3B50&api_params=1&securityToken=1790f12c4e0908e109a7acdfccbcff0623d32bcfe388941ad614e2c8e9e1d86b729812c664e2ba5fe52357a2709d8e90ec96afb7abcb3a46e72fa80ac3bd74dc&userUid=1316015600783425536&orgUid=1316015600787619841';
-  // const feedItems = useUpworkFeed(upworkFeedUrl);
-
-
-
 
   // Refs for both drawers
   const navDrawerRef = useRef(null);
@@ -371,6 +408,15 @@ const Newtab = () => {
               }}>
                 {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </Typography>
+              <Search>
+                <SearchIconWrapper>
+                  <SearchIcon />
+                </SearchIconWrapper>
+                <StyledInputBase
+                  placeholder="Search…"
+                  inputProps={{ 'aria-label': 'search' }}
+                />
+              </Search>
               <Typography variant="subtitle1" sx={{
                 fontWeight: 'bold',
                 fontSize: '3rem', // Doubled from '1.5rem' to '3rem'
