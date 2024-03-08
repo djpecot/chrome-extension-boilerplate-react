@@ -23,6 +23,7 @@ import { styled, alpha } from '@mui/material/styles';
 import useUpworkFeed from '../../hooks/useFeedItems';
 import useCounters from '../../hooks/useCounter';
 import TextField from '@mui/material/TextField';
+import useBackgroundImage from '../../hooks/useBackgroundImage'
 
 
 // Styled components for the search bar
@@ -73,9 +74,8 @@ const Newtab = () => {
     { id: uuidv4(), title: 'Counter 1', number: 0 },
     // ... other initial counters
   ];
-
+  const backgroundImageUrl = useBackgroundImage();
   const { counters, addCounter, deleteCounter, updateCounterNumber, saveCounter } = useCounters(initialCounters);
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState('');
   // At the top of your component, add a new state for the quote
   const [inspirationalQuote, setInspirationalQuote] = useState('Persistence powers passion.');
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -133,6 +133,7 @@ const Newtab = () => {
 
   const showDefaultPage = () => setCurrentPage('default');
   const showUpworkTimeline = () => setCurrentPage('upwork');
+  const showLinksPage = () => setCurrentPage('links')
 
   // Refs for both drawers
   const navDrawerRef = useRef(null);
@@ -191,18 +192,6 @@ const Newtab = () => {
     // Update the quote every 24 hours
     const intervalId = setInterval(updateQuote, 86400000); // 86400000 ms in a day
     return () => clearInterval(intervalId); // Clear the interval on unmount
-  }, []);
-
-  useEffect(() => {
-    // Fetch a random image from Unsplash and set it as the background
-    fetch('https://source.unsplash.com/random?nature')
-      .then((response) => {
-        setBackgroundImageUrl(response.url);
-        console.log(response.url); // For debugging
-      })
-      .catch((error) => {
-        console.error('Error fetching random image from Unsplash:', error);
-      });
   }, []);
 
   // Function to open the modal for a specific counter
@@ -311,19 +300,6 @@ const Newtab = () => {
     setIsModalOpen(false);
   };
 
-  // Load the counter value from chrome.storage when the component mounts
-  useEffect(() => {
-    chrome.storage.sync.get(['counter'], (result) => {
-      if (result.counter !== undefined) {
-        setCounter(result.counter);
-      } else {
-        // If no counter value is stored, initialize it to 23
-        setCounter(23);
-        chrome.storage.sync.set({ counter: 23 });
-      }
-    });
-  }, []);
-
   // Step 4: Load links from chrome.storage when component mounts
   useEffect(() => {
     // Get the links from chrome.storage
@@ -344,6 +320,7 @@ const Newtab = () => {
           currentPage={currentPage}
           showDefaultPage={showDefaultPage}
           showUpworkTimeline={showUpworkTimeline}
+          showLinksPage={showLinksPage}
           handleMouseEnter={handleNavDrawerMouseEnter}
           handleMouseLeave={handleNavDrawerMouseLeave}
         />
@@ -431,6 +408,12 @@ const Newtab = () => {
             <Button onClick={handleRefresh}>Refresh Feed</Button>
           </div>
           <UpworkTimeline feedItems={feedItems} />
+
+        </>
+      )}
+      {currentPage === 'links' && (
+        <>
+          <div>hello</div>
 
         </>
       )}

@@ -4,7 +4,7 @@ import MuiDrawer from '@mui/material/Drawer';
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import ViewTimelineOutlinedIcon from '@mui/icons-material/ViewTimelineOutlined';
-
+import LinkIcon from '@mui/icons-material/Link';
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -45,7 +45,7 @@ const MenuDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'op
     }),
 );
 
-const NavigationDrawer = ({ isNavDrawerOpen, currentPage, showDefaultPage, showUpworkTimeline, handleMouseEnter, handleMouseLeave }) => {
+const NavigationDrawer = ({ isNavDrawerOpen, currentPage, showDefaultPage, showUpworkTimeline, showLinksPage, handleMouseEnter, handleMouseLeave }) => {
     return (
         <MenuDrawer
             variant="permanent"
@@ -106,6 +106,30 @@ const NavigationDrawer = ({ isNavDrawerOpen, currentPage, showDefaultPage, showU
                             <ViewTimelineOutlinedIcon />
                         </ListItemIcon>
                         <ListItemText primary="Timeline" sx={{ opacity: isNavDrawerOpen ? 1 : 0 }} />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding sx={{ display: 'block' }}>
+                    <ListItemButton
+                        sx={{
+                            minHeight: 48,
+                            justifyContent: isNavDrawerOpen ? 'initial' : 'center',
+                            px: 2.5,
+                            color: 'white'
+                        }}
+                        selected={currentPage === 'links'}
+                        onClick={showLinksPage}
+                    >
+                        <ListItemIcon
+                            sx={{
+                                minWidth: 0,
+                                mr: isNavDrawerOpen ? 3 : 'auto',
+                                justifyContent: 'center',
+                                color: 'white'
+                            }}
+                        >
+                            <LinkIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Links" sx={{ opacity: isNavDrawerOpen ? 1 : 0 }} />
                     </ListItemButton>
                 </ListItem>
                 {/* Add more ListItems here for other menu items */}
