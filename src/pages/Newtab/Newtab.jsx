@@ -6,12 +6,8 @@ import CounterCard from './components/CounterCard';
 import EditModal from './components/EditModal';
 import LinkCard from './components/LinkCard';
 import UpworkTimeline from './components/UpworkTimeline'
-import { List, ListItemButton, ListItemText } from '@mui/material';
 import NavigationDrawer from './components/NavigationDrawer';
 
-
-import MuiDrawer from '@mui/material/Drawer';
-import { styled, useTheme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -19,11 +15,6 @@ import { v4 as uuidv4 } from 'uuid'; // You need to install uuid to generate uni
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Drawer from '@mui/material/Drawer';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import ViewTimelineOutlinedIcon from '@mui/icons-material/ViewTimelineOutlined';
-import HomeIcon from '@mui/icons-material/Home';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent } from '@mui/lab';
 import parseString from 'xml2js';
 
 
