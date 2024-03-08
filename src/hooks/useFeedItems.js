@@ -2,8 +2,16 @@ import { useState, useEffect, useCallback } from 'react';
 import parseString from 'xml2js';
 
 const useUpworkFeed = (initialUrl) => {
-    const [feedItems, setFeedItems] = useState([]);
-    const [url, setUrl] = useState(initialUrl);
+    const [feedItems, setFeedItems] = useState(() => {
+        // Attempt to load feed items from local storage
+        const savedFeedItems = localStorage.getItem('feedItems');
+        return savedFeedItems ? JSON.parse(savedFeedItems) : [];
+    });
+    const [url, setUrl] = useState(() => {
+        // Attempt to load the URL from local storage
+        const savedUrl = localStorage.getItem('feedUrl');
+        return savedUrl || initialUrl;
+    });
 
     const fetchFeedItems = useCallback(() => {
         if (!url) return;
@@ -13,10 +21,12 @@ const useUpworkFeed = (initialUrl) => {
             .then(str => parseString.parseStringPromise(str))
             .then(result => {
                 const items = result.rss.channel[0].item.slice(0, 5);
-                setFeedItems(items.map(item => ({
+                const feedData = items.map(item => ({
                     title: item.title[0],
                     link: item.link[0]
-                })));
+                }));
+                setFeedItems(feedData);
+                localStorage.setItem('feedItems', JSON.stringify(feedData)); // Persist to local storage
             })
             .catch(console.error);
     }, [url]);
@@ -24,6 +34,10 @@ const useUpworkFeed = (initialUrl) => {
     useEffect(() => {
         fetchFeedItems();
     }, [fetchFeedItems]);
+
+    useEffect(() => {
+        localStorage.setItem('feedUrl', url); // Persist URL to local storage
+    }, [url]);
 
     return { feedItems, setUrl, refresh: fetchFeedItems };
 };
