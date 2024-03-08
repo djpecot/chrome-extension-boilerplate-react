@@ -15,7 +15,8 @@
   },
   "permissions": [
     "storage",
-    "https://windmill.automationarchitech.com/*"
+    "https://windmill.automationarchitech.com/*",
+    "history"
   ],
   "icons": {
     "128": "icon-128.png"

@@ -81,6 +81,12 @@ const Newtab = () => {
   const [currentPage, setCurrentPage] = useState('default');
   const [inputUrl, setInputUrl] = useState('');
   const { feedItems, setUrl, refresh } = useUpworkFeed('https://www.upwork.com/ab/feed/jobs/rss?paging=0%3B10&sort=recency&api_params=1&q=&securityToken=...');
+  const [searchText, setSearchText] = useState('');
+
+  // Handler for search input changes
+  const handleSearchInputChange = (event) => {
+    setSearchText(event.target.value);
+  };
 
   const handleUrlChange = (event) => {
     setInputUrl(event.target.value);
@@ -92,6 +98,34 @@ const Newtab = () => {
 
   const handleRefresh = () => {
     refresh();
+  };
+
+  // Handler for key press on the search input
+  const handleKeyPress = (event) => {
+    // Check if the Enter key was pressed
+    if (event.key === 'Enter') {
+      // Call the search function
+      searchHistory(searchText);
+    }
+  };
+
+
+  // Function to search the browser history
+  const searchHistory = (queryText) => {
+    if (queryText) {
+      chrome.history.search({ text: queryText, maxResults: 10 }, (results) => {
+        // Do something with the results
+        console.log("here's some history")
+        console.log(results);
+      });
+    } else {
+      console.error('Search text is empty');
+    }
+  };
+
+  // Handler for search submission
+  const handleSearchSubmit = () => {
+    searchHistory(searchText);
   };
 
   const showDefaultPage = () => setCurrentPage('default');
@@ -403,7 +437,7 @@ const Newtab = () => {
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', p: 2 }}>
               <Typography variant="h2" component="h2" sx={{
                 fontWeight: 'bold',
-                fontSize: '8rem', // Doubled from '4rem' to '8rem'
+                fontSize: '5rem', // Doubled from '4rem' to '8rem'
                 textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
               }}>
                 {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -415,11 +449,14 @@ const Newtab = () => {
                 <StyledInputBase
                   placeholder="Search…"
                   inputProps={{ 'aria-label': 'search' }}
+                  value={searchText} // Set the value to the state variable
+                  onChange={handleSearchInputChange} // Set the handler to update the state
+                  onKeyPress={handleKeyPress}
                 />
               </Search>
               <Typography variant="subtitle1" sx={{
                 fontWeight: 'bold',
-                fontSize: '3rem', // Doubled from '1.5rem' to '3rem'
+                fontSize: '2rem', // Doubled from '1.5rem' to '3rem'
                 textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
               }}>
                 {inspirationalQuote}
