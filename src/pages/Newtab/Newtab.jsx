@@ -21,6 +21,7 @@ import { styled, alpha } from '@mui/material/styles';
 
 
 import useUpworkFeed from '../../hooks/useFeedItems';
+import useCounters from '../../hooks/useCounter';
 import TextField from '@mui/material/TextField';
 
 
@@ -68,10 +69,12 @@ const Newtab = () => {
   const [cards, setCards] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
-  const [counters, setCounters] = useState([
-    { id: uuidv4(), title: 'Counter 1', number: 23 },
-    // ... add more counters as needed
-  ]);
+  const initialCounters = [
+    { id: uuidv4(), title: 'Counter 1', number: 0 },
+    // ... other initial counters
+  ];
+
+  const { counters, addCounter, deleteCounter, updateCounterNumber, saveCounter } = useCounters(initialCounters);
   const [backgroundImageUrl, setBackgroundImageUrl] = useState('');
   // At the top of your component, add a new state for the quote
   const [inspirationalQuote, setInspirationalQuote] = useState('Persistence powers passion.');
@@ -202,45 +205,6 @@ const Newtab = () => {
       });
   }, []);
 
-  // Function to add a new counter
-  const addCounter = () => {
-    const newCounter = {
-      id: uuidv4(),
-      title: `Counter ${counters.length + 1}`,
-      number: 0
-    };
-    setCounters([...counters, newCounter]);
-    // Save the new counters array to chrome.storage if needed
-    chrome.storage.sync.set({ counters: [...counters, newCounter] });
-  };
-
-  // Function to delete a counter and update chrome.storage
-  const deleteCounter = (counterId) => {
-    const updatedCounters = counters.filter(counter => counter.id !== counterId);
-    setCounters(updatedCounters);
-    chrome.storage.sync.set({ counters: updatedCounters });
-    setIsModalOpen(false); // Close the modal after deletion
-  };
-
-
-
-  // Function to update a counter's number
-  const updateCounterNumber = (counterId, delta) => {
-    setCounters(prevCounters => {
-      const updatedCounters = prevCounters.map(counter => {
-        if (counter.id === counterId) {
-          return { ...counter, number: counter.number + delta };
-        }
-        return counter;
-      });
-      // Save the updated counters array to chrome.storage after updating the state
-      chrome.storage.sync.set({ counters: updatedCounters });
-      return updatedCounters;
-    }, () => {
-      // Use this space to do anything else after the state has been updated
-    });
-  };
-
   // Function to open the modal for a specific counter
   const openCounterModal = (counterId) => {
     const counterToEdit = counters.find(counter => counter.id === counterId);
@@ -287,19 +251,6 @@ const Newtab = () => {
     });
   }, []);
 
-  useEffect(() => {
-    chrome.storage.sync.get(['counters'], (result) => {
-      if (result.counters) {
-        setCounters(result.counters);
-      } else {
-        // Initialize with a default counter if none are found
-        const defaultCounter = { id: uuidv4(), title: 'Counter 1', number: 23 };
-        setCounters([defaultCounter]);
-        chrome.storage.sync.set({ counters: [defaultCounter] });
-      }
-    });
-  }, []);
-
   // Function to add a new card and save to chrome.storage
   const addCard = () => {
     const newCard = {
@@ -342,17 +293,7 @@ const Newtab = () => {
   const saveCard = () => {
     if ('number' in editingCard) {
       // It's a counter card, update the counters state
-      setCounters(prevCounters => {
-        const updatedCounters = prevCounters.map(counter => {
-          if (counter.id === editingCard.id) {
-            return { ...counter, ...editingCard };
-          }
-          return counter;
-        });
-        // Save the updated counters array to chrome.storage
-        chrome.storage.sync.set({ counters: updatedCounters });
-        return updatedCounters;
-      });
+      saveCounter(editingCard);
     } else {
       // It's a link card, update the cards state
       setCards(prevCards => {
