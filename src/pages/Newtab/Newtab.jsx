@@ -7,6 +7,7 @@ import EditModal from './components/EditModal';
 import LinkCard from './components/LinkCard';
 import UpworkTimeline from './components/UpworkTimeline'
 import NavigationDrawer from './components/NavigationDrawer';
+import SearchBar from './components/SearchBar';
 
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -19,52 +20,11 @@ import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha } from '@mui/material/styles';
 
-
 import useUpworkFeed from '../../hooks/useFeedItems';
 import useCounters from '../../hooks/useCounter';
 import TextField from '@mui/material/TextField';
 import useBackgroundImage from '../../hooks/useBackgroundImage'
 
-
-// Styled components for the search bar
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(3),
-    width: 'auto',
-  },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
-  },
-}));
 
 const Newtab = () => {
   const [cards, setCards] = useState([]);
@@ -360,18 +320,11 @@ const Newtab = () => {
               }}>
                 {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </Typography>
-              <Search>
-                <SearchIconWrapper>
-                  <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                  placeholder="Search…"
-                  inputProps={{ 'aria-label': 'search' }}
-                  value={searchText} // Set the value to the state variable
-                  onChange={handleSearchInputChange} // Set the handler to update the state
-                  onKeyPress={handleKeyPress}
-                />
-              </Search>
+              <SearchBar
+                searchText={searchText}
+                handleSearchInputChange={handleSearchInputChange}
+                handleKeyPress={handleKeyPress}
+              />
               <Typography variant="subtitle1" sx={{
                 fontWeight: 'bold',
                 fontSize: '2rem', // Doubled from '1.5rem' to '3rem'
